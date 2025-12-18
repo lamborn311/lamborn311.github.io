@@ -1,0 +1,47 @@
+.header-image {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto; /* Centers the image */
+}
+
+/* Smooth scrolling for anchor links */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Background color for the entire page */
+body {
+    background-color: #c2e1fd; /* Light blue color */
+}
+
+/* Background color for the "Links to Videos" section */
+#videos {
+    background-color: #e0ffff; /* Light cyan color */
+}
+
+/* 5. Styling for a footer div */
+.footer {
+    margin-top: 30px;
+    padding: 15px;
+    text-align: center;
+    background-color: #343a40; /* Dark background */
+    color: white; /* White text */
+}
+
+/* 2. Style for font family */
+h1, h2, h3, p {
+    font-family: 'pacifico; /* Use Arial as the font family */
+}
+
+body {
+    color: #2e0074; /* Dark gray font color for body text */
+}
+
+.facts-section {
+    background-color: #e0f7fa; /* Light aqua background */
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 8px;
+}

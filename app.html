@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frogger Game</title>
+    <link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+    <div class="game-container">
+        <h1>Frogger Game</h1>
+        <canvas id="gameCanvas" width="600" height="400"></canvas>
+        <div class="score">Score: <span id="score">0</span></div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div id="gameOverModal" class="modal">
+        <div class="modal-content">
+            <h2>You Win!</h2>
+            <button id="playAgain">Play Again</button>
+            <button id="goHome">Go Home</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+        let score = 0;
+        let froggerX = canvas.width / 2;
+        let froggerY = canvas.height - 30;
+        let frogWidth = 30;
+        let frogHeight = 30;
+        let speed = 2;
+        let gameInterval;
+        let cars = [];
+        let logs = [];
+
+        // Key press event listener
+        let keys = {};
+        window.addEventListener('keydown', function(e) {
+            keys[e.key] = true;
+        });
+        window.addEventListener('keyup', function(e) {
+            keys[e.key] = false;
+        });
+
+        // Car object
+        function createCar() {
+            const carHeight = 30;
+            const carWidth = 60;
+            const carSpeed = Math.random() * 2 + 2;
+            const lane = Math.floor(Math.random() * 3) * 100;
+            const car = { x: canvas.width, y: lane, width: carWidth, height: carHeight, speed: carSpeed };
+            cars.push(car);
+        }
+
+        // Log object
+        function createLog() {
+            const logHeight = 20;
+            const logWidth = 100;
+            const logSpeed = Math.random() * 2 + 1;
+            const lane = Math.floor(Math.random() * 3) * 100;
+            const log = { x: canvas.width, y: lane, width: logWidth, height: logHeight, speed: logSpeed };
+            logs.push(log);
+        }
+
+        function updateCars() {
+            cars.forEach((car, index) => {
+                car.x -= car.speed;
+                if (car.x + car.width < 0) {
+                    cars.splice(index, 1);
+                    score++;
+                    scoreElement.innerText = score;
+                }
+            });
+        }
+
+        function updateLogs() {
+            logs.forEach((log, index) => {
+                log.x -= log.speed;
+                if (log.x + log.width < 0) {
+                    logs.splice(index, 1);
+                }
+            });
+        }
+
+        function drawCars() {
+            cars.forEach(car => {
+                ctx.fillStyle = 'purple'; // Purple cars
+                ctx.fillRect(car.x, car.y, car.width, car.height);
+            });
+        }
+
+        function drawLogs() {
+            logs.forEach(log => {
+                ctx.fillStyle = 'brown'; // Brown logs
+                ctx.fillRect(log.x, log.y, log.width, log.height);
+            });
+        }
+
+        function drawFrogger() {
+            ctx.fillStyle = 'green'; // Green frog
+            ctx.fillRect(froggerX, froggerY, frogWidth, frogHeight);
+        }
+
+        function moveFrogger() {
+            if (keys['ArrowUp'] && froggerY > 0) froggerY -= speed;
+            if (keys['ArrowDown'] && froggerY < canvas.height - frogHeight) froggerY += speed;
+            if (keys['ArrowLeft'] && froggerX > 0) froggerX -= speed;
+            if (keys['ArrowRight'] && froggerX < canvas.width - frogWidth) froggerX += speed;
+        }
+
+        function checkCollisions() {
+            cars.forEach(car => {
+                if (froggerX < car.x + car.width &&
+                    froggerX + frogWidth > car.x &&
+                    froggerY < car.y + car.height &&
+                    froggerY + frogHeight > car.y) {
+                        gameOver();
+                    }
+            });
+
+            logs.forEach(log => {
+                if (froggerX < log.x + log.width &&
+                    froggerX + frogWidth > log.x &&
+                    froggerY < log.y + log.height &&
+                    froggerY + frogHeight > log.y) {
+                        froggerX += log.speed; // Frog moves with the log
+                }
+            });
+        }
+
+        function gameOver() {
+            clearInterval(gameInterval);
+            document.getElementById('gameOverModal').style.display = 'flex';
+        }
+
+        function resetGame() {
+            froggerX = canvas.width / 2;
+            froggerY = canvas.height - 30;
+            score = 0;
+            scoreElement.innerText = score;
+            cars = [];
+            logs = [];
+            gameInterval = setInterval(gameLoop, 20);
+        }
+
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            moveFrogger();
+            updateCars();
+            updateLogs();
+            drawCars();
+            drawLogs();
+            drawFrogger();
+            checkCollisions();
+        }
+
+        function startGame() {
+            gameInterval = setInterval(gameLoop, 20);
+            setInterval(createCar, 2000);
+            setInterval(createLog, 3000);
+        }
+
+        // Modal actions
+        document.getElementById('playAgain').addEventListener('click', function() {
+            document.getElementById('gameOverModal').style.display = 'none';
+            resetGame();
+        });
+
+        document.getElementById('goHome').addEventListener('click', function() {
+            window.location.href = 'index.html';
+        });
+
+        startGame();
+    </script>
+
+</body>
+</html>
